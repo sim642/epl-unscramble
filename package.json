@@ -1,10 +1,15 @@
 {
   "name": "epl-unscramble",
-  "version": "0.0.0",
-  "description": "EPL free articles unscrambler",
+  "version": "1.0.0",
+  "description": "EPL tasuliste artiklite dešifreerija",
+  "homepage": "http://epl-unscramble.herokuapp.com",
   "main": "web.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sim642/epl-unscramble"
   },
   "author": "Simmo Saan",
   "license": "MIT",
