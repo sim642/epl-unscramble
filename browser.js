@@ -1,4 +1,4 @@
-$.post("http://localhost:5000/unscramble", {
+$.post("http://epl-unscramble.herokuapp.com/unscramble", {
 	text: $('div.obfuscated_body').html(),
 	extra: $('font.articleBody').clone().children().remove().end().text().trim() +
 		" " + $('font.imgCapS').text()
