@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(ua.middleware('UA-53893556-1', {cookieName: '_ga'}));
 
 app.get('/', function(req, res) {
+	console.log(req.ip, req.headers['user-agent']);
 	req.visitor.pageview({dp: '/', uip: req.ip, ua: req.headers['user-agent']}).send();
 
 	res.redirect('https://github.com/sim642/epl-unscramble');
