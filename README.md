@@ -1,6 +1,6 @@
 epl-unscramble
 ==============
-**epl-unscramble** on Eesti Päevalehe (EPL) tasuliste artiklite dešifreerija. Selleks ei kasuta antud süsteem mitte midagi rohkemat kui infot ainult sellelt leheküljelt, millel paikeb artikli algus ja ülejäänud "udu". Lisaks kasutab süsteem vaid üht lihtsat eesti keele sõnade nimekirja ning kuna sellega töötlemine nõuab olulist ressurssi, siis tehakse põhiline dešifreerimine ära serveri poolel.
+**epl-unscramble** on Eesti Päevalehe (EPL) tasuliste artiklite tõenäosuslik dešifreerija. Selleks ei kasuta antud süsteem mitte midagi rohkemat kui infot ainult sellelt leheküljelt, millel paikeb artikli algus ja ülejäänud "udu". Lisaks kasutab süsteem vaid üht lihtsat eesti keele sõnade nimekirja ning kuna sellega töötlemine nõuab olulist ressurssi, siis tehakse põhiline dešifreerimine ära serveri poolel.
 
 Kuidas kasutada?
 ----------------
