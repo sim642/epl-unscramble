@@ -7,8 +7,8 @@ var app = express();
 var unscrambler = require('./unscrambler');
 
 app.use(logfmt.requestLogger());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(ua.middleware('UA-53893556-1', {cookieName: '_ga'}));
+app.use(bodyParser.urlencoded({extended: false})); // POST body parser
+app.use(ua.middleware('UA-53893556-1', {cookieName: '_ga'})); // Google Analytics
 
 // https://stackoverflow.com/questions/14382725/how-to-get-the-correct-ip-address-of-a-client-into-a-node-socket-io-app-hosted-o
 function getClientIp(req) {
@@ -33,7 +33,7 @@ function getClientIp(req) {
 app.get('/', function(req, res) {
 	req.visitor.pageview({dp: '/', uip: getClientIp(req), ua: req.headers['user-agent']}).send();
 
-	res.redirect('https://github.com/sim642/epl-unscramble');
+	res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/browser.js', function(req, res) {
@@ -53,7 +53,7 @@ app.post('/unscramble', function(req, res) {
 
 		res.set({
 			'Access-Control-Allow-Origin': '*'
-		});
+		}); // stop browsers from freaking out
 		res.send(text);
 	});
 });
