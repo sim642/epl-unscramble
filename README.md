@@ -14,7 +14,7 @@ Igaühel on võimalus ise proovida ja veenduda, et epl-unscramble suht-koht toim
 
 ### Sammude kaupa
 1. Lohista järgnev link oma brauseri järjehoidjate ribale: 
-<a href="javascript:(function%20()%20{var%20s%20=%20document.createElement('script');s.setAttribute('src',%20'http://epl-unscramble.herokuapp.com/browser.js');document.body.appendChild(s);}());">epl-unscramble</a>.
+[epl-unscramble](javascript:%28function%20%28%29%20{var%20s%20=%20document.createElement%28'script'%29;s.setAttribute%28'src',%20'http://epl-unscramble.herokuapp.com/browser.js'%29;document.body.appendChild%28s%29;}%28%29%29;).
 2. Ava mõni EPL tasuline artikkel, mida sooviksid dešifreerida täismahus lugemiseks. Näiteks: [Obama visiit toob kaasa ajaloo kõige karmimad turvanõuded](http://epl.delfi.ee/news/eesti/obama-visiit-toob-kaasa-ajaloo-koige-karmimad-turvanouded.d?id=69551183).
 3. Kliki just järjehoidjate ribale lisatud "epl-unscramble"-il ja mõne hetke möödudes ilmubki tavapärase "udu" asemele loetav tekst!
 
