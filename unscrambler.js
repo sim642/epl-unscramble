@@ -1,5 +1,6 @@
 var jsdom = require('jsdom');
 var fs = require('fs');
+var jquery = fs.readFileSync('./jquery-1.11.1.min.js', 'utf-8').toString();
 
 String.prototype.sort = function() {
 	return this.split('').sort().join('');
@@ -9,17 +10,60 @@ String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
 }
 
-var wordLines = fs.readFileSync('et.txt').toString().split(/\r?\n/);
-
 var words = {};
-for (var i = 0; i < wordLines.length; i++) {
-	var s = wordLines[i].split(' ');
-	var sorted = s[0].sort();
+var wordSum = 0;
+
+function loadWordFile(filename, swap) {
+	console.log('Loading wordfile', filename);
+	var wordLines = fs.readFileSync(filename).toString().split(/\r?\n/);
+	for (var i = 0; i < wordLines.length; i++) {
+		var s = wordLines[i].split(/\s/);
+		if (s.length < 2)
+			continue;
+
+		if (swap)
+			s = [s[1], s[0]];
+
+		var sorted = s[1].sort();
+
+		if (!(sorted in words))
+			words[sorted] = [];
+
+		var j;
+		for (j = 0; j < words[sorted].length; j++) {
+			if (words[sorted][j].word == s[1]) {
+				words[sorted][j].count += parseInt(s[0]);
+				break;
+			}
+		}
+
+		if (j == words[sorted].length)
+			words[sorted].push({word: s[1], count: parseInt(s[0])});
+
+		wordSum += parseInt(s[0]);
+	}
+}
+
+loadWordFile('sonavorm_kahanevas.txt', false);
+loadWordFile('et.txt', true);
+
+for (var sorted in words) {
+	words[sorted].sort(function(lhs, rhs) {
+		rhs.count - lhs.count;
+	});
+}
+
+console.log('Loading bigramfile');
+var bigramLines = fs.readFileSync('2_gramm_koond_sonavorm_sort_x_va10').toString().split(/\r?\n/);
+var bigrams = {};
+var bigramSum = 0;
+for (var i = 0; i < bigramLines.length; i++) {
+	var s = bigramLines[i].trim().replace(/#z#/g, '').split(/\s/);
+	if (s.length < 3)
+		continue;
 	
-	if (!(sorted in words))
-		words[sorted] = [];
-	
-	words[sorted].push({word: s[0], count: parseInt(s[1])});
+	bigrams[[s[1], s[2]]] = parseInt(s[0]);
+	bigramSum += parseInt(s[0]);
 }
 
 module.exports.unscramble = function(content, extra, callback) {
@@ -49,13 +93,19 @@ module.exports.unscramble = function(content, extra, callback) {
 		});
 	}
 
-	jsdom.env(content, ['http://code.jquery.com/jquery-1.11.0.min.js'], function(err, window) {
+	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
 
+		var prev = '';
 		$('p, h3, h4').text(function(i, text) {
-			//return text.replace(/\b[^\s.,-]+\b/g, function(match) {
-			return text.replace(/[A-ZÕÜÄÖa-zäöõü]+/g, function(match) {
+			return text.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
+				if (match.match(/[.,]/)) {
+					prev = match;
+					return match;
+				}
+
 				var sorted = match.toLowerCase().sort();
+
 				if (sorted in extras) {
 					var word = extras[sorted][0].word;
 					for (var i = 0; i < match.length; i++) {
@@ -63,22 +113,36 @@ module.exports.unscramble = function(content, extra, callback) {
 							word = word.replaceAt(i, word[0].toUpperCase());
 						}
 					}
+					prev = word;
 					//return "<" + word + ">";
 					return word;
 				}
-				else if (sorted in words) {
-					var word = words[sorted][0].word;
+				if (sorted in words) {
+					var cands = words[sorted];
+					for (var i = 0; i < cands.length; i++) {
+						cands[i].prob = (cands[i].count / wordSum) * ((bigrams[[prev, cands[i].word]] || 1) / bigramSum);
+					}
+					cands.sort(function(lhs, rhs) {
+						return rhs.prob - lhs.prob;
+					});
+
+					var word = cands[0].word;
 					for (var i = 0; i < match.length; i++) {
 						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
 							word = word.replaceAt(i, word[0].toUpperCase());
 						}
 					}
-					//return "<" + word + ">";
+
+					prev = word;
+					//return "<" + word + "/" + cands.length + ">";
 					return word;
+					//return "[" + match + "]";
 				}
-				else
+				else {
+					prev = match;
 					return "[" + match + "]";
 					//return match;
+				}
 			});
 		});
 
@@ -87,5 +151,5 @@ module.exports.unscramble = function(content, extra, callback) {
 		});*/
 
 		(callback || function(){})($('body').html());
-	});
+	}});
 }
