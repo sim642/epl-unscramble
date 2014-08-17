@@ -8,4 +8,6 @@ $.post('http://epl-unscramble.herokuapp.com/unscramble', {
 }, function(data) {
 	$('div.obfuscated_body').html(data).removeClass('obfuscated_body');
 	$('.sso-art-wrapper').hide();
+}).fail(function(jqXHR, text, err) {
+	alert(text + '\n\n' + JSON.stringify(err));
 });
