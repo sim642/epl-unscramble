@@ -31,25 +31,25 @@ function getClientIp(req) {
 };
 
 app.get('/', function(req, res) {
-	req.visitor.pageview({dp: '/', uip: getClientIp(req), ua: req.headers['user-agent']}).send();
+	req.visitor.pageview({dp: '/', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
 
 	res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/browser.js', function(req, res) {
-	req.visitor.pageview({dp: '/browser.js', uip: getClientIp(req), ua: req.headers['user-agent']}).send();
+	req.visitor.pageview({dp: '/browser.js', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
 
 	res.sendFile(__dirname + '/browser.js');
 });
 
 app.post('/unscramble', function(req, res) {
-	req.visitor.pageview({dp: '/unscramble', uip: getClientIp(req), ua: req.headers['user-agent']}).event({ec: 'Processing', ea: 'unscramble', el: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent']}).send();
+	req.visitor.pageview({dp: '/unscramble', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).event({ec: 'Processing', ea: 'unscramble', el: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
 	var time = process.hrtime();
 
 	unscrambler.unscramble(req.body.text, req.body.extra, function(text) {
 		var diff = process.hrtime(time);
 		var ms = Math.round(diff[0] * 1e3 + diff[1] / 1e6);
-		req.visitor.timing({utc: 'Processing', etv: 'unscramble', ett: ms, utl: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent']}).send();
+		req.visitor.timing({utc: 'Processing', etv: 'unscramble', ett: ms, utl: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
 
 		res.set({
 			'Access-Control-Allow-Origin': '*'
