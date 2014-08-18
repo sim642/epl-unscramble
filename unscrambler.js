@@ -93,6 +93,8 @@ module.exports.unscramble = function(content, extra, callback) {
 		});
 	}
 
+	var repls = {};
+
 	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
 
@@ -104,20 +106,46 @@ module.exports.unscramble = function(content, extra, callback) {
 					return match;
 				}
 
+				var replcnt = 0;
+				//console.log(match, repls);
+				var rs = Object.keys(repls).sort(function(lhs, rhs) {
+					return rhs.length - lhs.length;
+				});
+				//for (var scrambled in repls) {
+				var rmatch = match;
+				for (var i = 0; i < rs.length; i++) {
+					var scrambled = rs[i];
+					rmatch = rmatch.replace(scrambled, function(match2) {
+						replcnt++;
+						return repls[scrambled];
+					}, 'g');
+				}
+
 				var sorted = match.toLowerCase().sort();
 
-				if (sorted in extras) {
-					var word = extras[sorted][0].word;
+				if (replcnt > 0) {
 					for (var i = 0; i < match.length; i++) {
 						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
-							word = word.replaceAt(i, word[0].toUpperCase());
+							rmatch = rmatch.replaceAt(i, rmatch[i].toUpperCase());
+						}
+					}
+					prev = rmatch;
+					return rmatch/* + '/' + replcnt.toString()*/;
+				}
+				else if (sorted in extras) {
+					var word = extras[sorted][0].word;
+					if (word.length >= 3)
+						repls[match] = word;
+					for (var i = 0; i < match.length; i++) {
+						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
+							word = word.replaceAt(i, word[i].toUpperCase());
 						}
 					}
 					prev = word;
 					//return "<" + word + ">";
 					return word;
 				}
-				if (sorted in words) {
+				else if (sorted in words) {
 					var cands = words[sorted];
 					for (var i = 0; i < cands.length; i++) {
 						cands[i].prob = (cands[i].count / wordSum) * ((bigrams[[prev, cands[i].word]] || 1) / bigramSum);
@@ -127,9 +155,11 @@ module.exports.unscramble = function(content, extra, callback) {
 					});
 
 					var word = cands[0].word;
+					if (word.length >= 3)
+						repls[match] = word;
 					for (var i = 0; i < match.length; i++) {
 						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
-							word = word.replaceAt(i, word[0].toUpperCase());
+							word = word.replaceAt(i, word[i].toUpperCase());
 						}
 					}
 
