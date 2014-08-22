@@ -93,7 +93,7 @@ module.exports.unscramble = function(content, extra, callback) {
 		});
 	}
 
-	var repls = {};
+	var repls = [];
 
 	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
@@ -107,19 +107,16 @@ module.exports.unscramble = function(content, extra, callback) {
 				}
 
 				var replcnt = 0;
-				//console.log(match, repls);
-				var rs = Object.keys(repls).sort(function(lhs, rhs) {
-					return rhs.length - lhs.length;
-				});
-				//for (var scrambled in repls) {
 				var rmatch = match;
-				for (var i = 0; i < rs.length; i++) {
-					var scrambled = rs[i];
+				for (var i = repls.length - 1; i >= 0; i--) {
+					var scrambled = repls[i][0];
+					var word = repls[i][1];
 					rmatch = rmatch.replace(scrambled, function(match2) {
 						replcnt++;
-						return repls[scrambled];
+						return word.toUpperCase();
 					}, 'g');
 				}
+				rmatch = rmatch.toLowerCase();
 
 				var sorted = match.toLowerCase().sort();
 
@@ -129,19 +126,20 @@ module.exports.unscramble = function(content, extra, callback) {
 							rmatch = rmatch.replaceAt(i, rmatch[i].toUpperCase());
 						}
 					}
-					prev = rmatch;
-					return rmatch/* + '/' + replcnt.toString()*/;
+					prev = rmatch.toLowerCase();
+					return rmatch;
+					//return match + '_' + rmatch + '/' + replcnt.toString();
 				}
 				else if (sorted in extras) {
 					var word = extras[sorted][0].word;
 					if (word.length >= 3)
-						repls[match] = word;
+						repls.push([match.toLowerCase(), word]);
 					for (var i = 0; i < match.length; i++) {
 						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
 							word = word.replaceAt(i, word[i].toUpperCase());
 						}
 					}
-					prev = word;
+					prev = word.toLowerCase();
 					//return "<" + word + ">";
 					return word;
 				}
@@ -156,14 +154,14 @@ module.exports.unscramble = function(content, extra, callback) {
 
 					var word = cands[0].word;
 					if (word.length >= 3)
-						repls[match] = word;
+						repls.push([match.toLowerCase(), word]);
 					for (var i = 0; i < match.length; i++) {
 						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
 							word = word.replaceAt(i, word[i].toUpperCase());
 						}
 					}
 
-					prev = word;
+					prev = word.toLowerCase();
 					//return "<" + word + "/" + cands.length + ">";
 					return word;
 					//return "[" + match + "]";
