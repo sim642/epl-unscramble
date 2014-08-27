@@ -2,6 +2,8 @@ epl-unscramble
 ==============
 **epl-unscramble** on Eesti Päevalehe (EPL) tasuliste artiklite tõenäosuslik dešifreerija. Selleks ei kasuta antud süsteem mitte midagi rohkemat kui infot ainult sellelt leheküljelt, millel paikeb artikli algus ja ülejäänud "udu". Lisaks kasutab süsteem vaid üht lihtsat eesti keele sõnade nimekirja ning kuna sellega töötlemine nõuab olulist ressurssi, siis tehakse põhiline dešifreerimine ära serveri poolel.
 
+Lisaks toimib epl-unscramble ka Eesti Ekspressi, Maalehe ja teiste delfi.ee portaalis paiknevate tasuliste artiklitega.
+
 Kuidas kasutada?
 ----------------
 Igaühel on võimalus ise proovida ja veenduda, et epl-unscramble suht-koht toimib. Selleks piisab ainult ühe brauseri järjehoidja (*bookmark'i*) kasutamisest. 
@@ -14,6 +16,9 @@ Igaühel on võimalus ise proovida ja veenduda, et epl-unscramble suht-koht toim
 Ja täpselt nii lihtne see ongi, kusjuures kui see järjehoidja on juba olemas, siis pole vaja edaspidi muud teha, kui lihtsalt EPL-e artiklit lugedes sellel klikkida.
 
 Külg külje kõrval võrdlust võib näha [siit](https://www.diffchecker.com/ayn1j589). Vasakul on artikli originaaltekst, paremal epl-unscramble'i dešifreeritu. Loomulikult on erinevusi, kuid üllatuslikult pole neid nii palju kui esialgu võiks arvata, kusjuures suuremalt jaolt on need just pikemates sõnades või nimedes.
+
+### Automaatselt
+Kui on soov antud protsessi automatiseerida, et ei peaks iga artikli peal ise järjehoidjal klikkima, on võimalik ka oma brauserisse paigaldada *userscript*, mis toimib näiteks *Greasemonkey*'ga [siit](http://epl-unscramble.herokuapp.com/epl-unscramble.user.js). Kõikidel lehekülgedel, millel epl-unscramble toimib, käivitatakse ülal kirjeldatud protseduur dešifreerimiseks automaatselt.
 
 Kuidas see töötab?
 ------------------
