@@ -8,8 +8,10 @@
 // @include     http://arileht.delfi.ee/news/*
 // @include     http://kasulik.delfi.ee/news/*
 // @include     http://maakodu.delfi.ee/news/*
-// @version     1
+// @version     2
 // @grant       none
 // ==/UserScript==
 
-(function () {var s = document.createElement('script');s.setAttribute('src', 'http://epl-unscramble.herokuapp.com/browser.js');document.body.appendChild(s);}());
+if ($('div.obfuscated_body').length > 0) {
+	$.getScript('http://epl-unscramble.herokuapp.com/browser.js');
+}
