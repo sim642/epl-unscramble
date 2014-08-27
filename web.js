@@ -42,6 +42,12 @@ app.get('/browser.js', function(req, res) {
 	res.sendFile(__dirname + '/browser.js');
 });
 
+app.get('/epl-unscramble.user.js', function(req, res) {
+	req.visitor.pageview({dp: '/epl-unscramble.user.js', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
+
+	res.sendFile(__dirname + '/epl-unscramble.user.js');
+});
+
 app.post('/unscramble', function(req, res) {
 	req.visitor.pageview({dp: '/unscramble', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).event({ec: 'Processing', ea: 'unscramble', el: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
 	var time = process.hrtime();
