@@ -8,7 +8,7 @@ if ($('div.obfuscated_body').length > 0) {
 		url: document.URL
 	}, function(data) {
 		$('div.obfuscated_body').html(data).removeClass('obfuscated_body');
-		$('.sso-art-wrapper').hide();
+		$('.sso-art-wrapper, .bottom-sso-wrapper, .pcc-recommended-content').hide();
 	}).fail(function(jqXHR, text, err) {
 		alert(text + '\n\n' + JSON.stringify(err));
 	});
