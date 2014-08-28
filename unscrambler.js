@@ -7,7 +7,7 @@ String.prototype.sort = function() {
 }
 
 String.prototype.replaceAt = function(index, character) {
-    return this.substr(0, index) + character + this.substr(index+character.length);
+    return this.substr(0, index) + character + this.substr(index + character.length);
 }
 
 var words = {};
@@ -66,8 +66,17 @@ for (var i = 0; i < bigramLines.length; i++) {
 	bigramSum += parseInt(s[0]);
 }
 
+function mimicCapital(word, mask) {
+	for (var i = 0; i < mask.length; i++) {
+		if (mask[i].match(/[A-ZÕÜÄÖ]/)) {
+			word = word.replaceAt(i, word[i].toUpperCase());
+		}
+	}
+	return word;
+}
+
 module.exports.unscramble = function(content, extra, callback) {
-	var extras = {};
+	var extras = {}; // known words from article intro
 	extra.replace(/[A-ZÕÜÄÖa-zäöõü]+/g, function(match) {
 		var sorted = match.toLowerCase().sort();
 
@@ -75,19 +84,19 @@ module.exports.unscramble = function(content, extra, callback) {
 			extras[sorted] = [];
 
 		var i;
-		for (i = 0; i < extras[sorted].length; i++) {
+		for (i = 0; i < extras[sorted].length; i++) { // find word in extras[sorted]
 			if (extras[sorted][i].word == match.toLowerCase()) {
 				extras[sorted][i].count++;
 				break;
 			}
 		}
 
-		if (i == extras[sorted].length) {
+		if (i == extras[sorted].length) { // word was not found in extras[sorted], add it
 			extras[sorted].push({word: match.toLowerCase(), count: 1});
 		}
 	});
 
-	for (var sorted in extras) {
+	for (var sorted in extras) { // sort descendingly to get most probable matches first
 		extras[sorted].sort(function(lhs, rhs) {
 			rhs.count - lhs.count;
 		});
@@ -96,29 +105,24 @@ module.exports.unscramble = function(content, extra, callback) {
 	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
 
-		var prev = '';
+		var prev = ''; // previous word
 		$('p, h3, h4').text(function(i, text) {
 			return text.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
-				if (match.match(/[.,]/)) {
+				if (match.match(/[.,]/)) { // remember punctuation as previous
 					prev = match;
 					return match;
 				}
 
 				var sorted = match.toLowerCase().sort();
 
-				if (sorted in extras) {
-					var word = extras[sorted][0].word;
-					for (var i = 0; i < match.length; i++) {
-						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
-							word = word.replaceAt(i, word[0].toUpperCase());
-						}
-					}
+				if (sorted in extras) { // known word from article intro
+					var word = mimicCapital(extras[sorted][0].word, match);
 					prev = word;
-					//return "<" + word + ">";
 					return word;
 				}
-				if (sorted in words) {
-					var cands = words[sorted];
+				if (sorted in words) { // known word from wordlist
+					var cands = words[sorted]; // word candidates
+					// naive bayesian classifier
 					for (var i = 0; i < cands.length; i++) {
 						cands[i].prob = (cands[i].count / wordSum) * ((bigrams[[prev, cands[i].word]] || 1) / bigramSum);
 					}
@@ -126,29 +130,16 @@ module.exports.unscramble = function(content, extra, callback) {
 						return rhs.prob - lhs.prob;
 					});
 
-					var word = cands[0].word;
-					for (var i = 0; i < match.length; i++) {
-						if (match[i].match(/[A-ZÕÜÄÖ]/)) {
-							word = word.replaceAt(i, word[0].toUpperCase());
-						}
-					}
-
+					var word = mimicCapital(cands[0].word, match);
 					prev = word;
-					//return "<" + word + "/" + cands.length + ">";
 					return word;
-					//return "[" + match + "]";
 				}
-				else {
+				else { // unknown word
 					prev = match;
 					return "[" + match + "]";
-					//return match;
 				}
 			});
 		});
-
-		/*$('p, h3, h4').text(function (i, text) {
-			console.log(i, text);
-		});*/
 
 		(callback || function(){})($('body').html());
 	}});
