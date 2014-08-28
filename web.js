@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var logfmt = require('logfmt');
 var ua = require('universal-analytics');
+var merge = require('merge');
 
 var app = express();
 var unscrambler = require('./unscrambler');
@@ -30,36 +31,40 @@ function getClientIp(req) {
 	return ipAddress;
 };
 
-app.get('/', function(req, res) {
-	req.visitor.pageview({dp: '/', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
+app.use(function(req, res, next) { // req.ip fixer
+	req.ip = getClientIp(req);
+	next();
+});
 
+app.use(function(req, res, next) { // GA pageview
+	req.visitor.defaults = { // default parameters used which should be used for all GA responses
+		dp: req.path,
+		uip: req.ip,
+		ua: req.headers['user-agent'],
+		dr: req.headers['referer'] || ''
+	};
+
+	req.visitor.pageview(req.visitor.defaults).send(); // automatically count pageview
+	next();
+});
+
+app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/browser.js', function(req, res) {
-	req.visitor.pageview({dp: '/browser.js', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
-
 	res.sendFile(__dirname + '/browser.js');
 });
 
 app.get('/epl-unscramble.user.js', function(req, res) {
-	req.visitor.pageview({dp: '/epl-unscramble.user.js', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
-
 	res.sendFile(__dirname + '/epl-unscramble.user.js');
 });
 
 app.post('/unscramble', function(req, res) {
-	req.visitor.pageview({dp: '/unscramble', uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).event({ec: 'Processing', ea: 'unscramble', el: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
-	var time = process.hrtime();
+	req.visitor.event(merge(req.visitor.defaults, {ec: 'Processing', ea: 'unscramble', el: req.body.url})).send();
 
 	unscrambler.unscramble(req.body.text, req.body.extra, function(text) {
-		var diff = process.hrtime(time);
-		var ms = Math.round(diff[0] * 1e3 + diff[1] / 1e6);
-		req.visitor.timing({utc: 'Processing', etv: 'unscramble', ett: ms, utl: req.body.url, uip: getClientIp(req), ua: req.headers['user-agent'], dr: req.headers['referer'] || ''}).send();
-
-		res.set({
-			'Access-Control-Allow-Origin': '*'
-		}); // stop browsers from freaking out
+		res.set({'Access-Control-Allow-Origin': '*'}); // stop browsers from freaking out about cross domain AJAX
 		res.send(text);
 	});
 });
