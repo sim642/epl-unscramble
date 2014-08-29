@@ -65,6 +65,7 @@ for (var i = 0; i < bigramLines.length; i++) {
 	bigrams[[s[1], s[2]]] = parseInt(s[0]);
 	bigramSum += parseInt(s[0]);
 }
+bigramLines = null;
 
 function mimicCapital(word, mask) {
 	for (var i = 0; i < mask.length; i++) {
@@ -106,7 +107,7 @@ module.exports.unscramble = function(content, extra, callback) {
 		var $ = window.jQuery;
 
 		var prev = ''; // previous word
-		$('p, h3, h4').text(function(i, text) {
+		$('*:not(:has(*)):not(script)').text(function(i, text) { // all elements with no children (but can have text)
 			return text.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
 				if (match.match(/[.,]/)) { // remember punctuation as previous
 					prev = match;
