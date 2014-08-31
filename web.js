@@ -42,7 +42,8 @@ app.use(function(req, res, next) { // req.ip fixer
 
 app.use(function(req, res, next) { // GA pageview
 	req.visitor.defaults = { // default parameters used which should be used for all GA responses
-		dp: req.path,
+		dp: req.originalUrl,
+		dt: req.path,
 		uip: req.ip,
 		ua: req.headers['user-agent'],
 		dr: req.headers['referer'] || ''

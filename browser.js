@@ -1,5 +1,5 @@
 if ($('div.obfuscated_body').length > 0) {
-	$.post('http://epl-unscramble.herokuapp.com/unscramble', {
+	$.post('http://epl-unscramble.herokuapp.com/unscramble?auto=' + (window.EPLauto ? 1 : 0), {
 		text: $('div.obfuscated_body').html(),
 		extra: $('font.articleBody[itemprop="description"]').text() +
 			' ' + $('font.articleBody[itemprop="articleBody"] > p').text().trim() +
