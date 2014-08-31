@@ -1,6 +1,8 @@
 var express = require('express');
-var bodyParser = require('body-parser');
 var logfmt = require('logfmt');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var ua = require('universal-analytics');
 var merge = require('merge');
 
@@ -9,6 +11,8 @@ var unscrambler = require('./unscrambler');
 
 app.use(logfmt.requestLogger());
 app.use(bodyParser.urlencoded({extended: false})); // POST body parser
+app.use(cookieParser()); // parse cookies to be used with GA
+app.use(session({secret: '7f52d94ac59a47c352ffaab4e6515730240546c2'})); // allow setting cookies
 app.use(ua.middleware('UA-53893556-1', {cookieName: '_ga'})); // Google Analytics
 
 // https://stackoverflow.com/questions/14382725/how-to-get-the-correct-ip-address-of-a-client-into-a-node-socket-io-app-hosted-o

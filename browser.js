@@ -6,6 +6,7 @@ if ($('div.obfuscated_body').length > 0) {
 			' ' + $('font.articleBody[itemprop="articleBody"]').clone().children().remove().end().text().trim() +
 			' ' + $('font.imgCapS').text(),
 		url: document.URL
+		// does not send cross-domain cookies
 	}, function(data) {
 		$('div.obfuscated_body').html(data).removeClass('obfuscated_body');
 		$('.sso-art-wrapper, .bottom-sso-wrapper, .pcc-recommended-content').hide();
