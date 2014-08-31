@@ -14,7 +14,5 @@
 
 if ($('div.obfuscated_body').length > 0) {
 	window.EPLauto = true;
-	$.ajaxSetup({cache: false});
 	$.getScript('http://epl-unscramble.herokuapp.com/browser.js?auto=1');
-	$.ajaxSetup({cache: true});
 }

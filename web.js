@@ -35,8 +35,9 @@ function getClientIp(req) {
 	return ipAddress;
 };
 
-app.use(function(req, res, next) { // req.ip fixer
+app.use(function(req, res, next) { // req fixer
 	req.ip = getClientIp(req);
+	req.originalUrl = req.originalUrl.replace(/&?_=\d*/, '');
 	next();
 });
 
