@@ -106,9 +106,13 @@ module.exports.unscramble = function(content, extra, callback) {
 	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
 
-		var prev = ''; // previous word
-		$('*:not(:has(*)):not(script)').text(function(i, text) { // all elements with no children (but can have text)
-			return text.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
+		var nodes = $('*:not(script)').contents().filter(function() {
+			return this.nodeType == 3;
+		}); // select all DOM nodes of text type
+
+		var prev = ''; // previous word, TODO: might be broken due to nodes selector
+		for (var i = 0; i < nodes.length; i++) {
+			nodes[i].nodeValue = nodes[i].nodeValue.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
 				if (match.match(/[.,]/)) { // remember punctuation as previous
 					prev = match;
 					return match;
@@ -140,7 +144,7 @@ module.exports.unscramble = function(content, extra, callback) {
 					return "[" + match + "]";
 				}
 			});
-		});
+		}
 
 		(callback || function(){})($('body').html());
 	}});

@@ -4,7 +4,8 @@ if ($('div.obfuscated_body').length > 0) {
 		extra: $('font.articleBody[itemprop="description"]').text() +
 			' ' + $('font.articleBody[itemprop="articleBody"] > p').text().trim() +
 			' ' + $('font.articleBody[itemprop="articleBody"]').clone().children().remove().end().text().trim() +
-			' ' + $('font.imgCapS').text(),
+			' ' + $('font.imgCapS').text() +
+			' ' + $('a', '.obfuscated_body').clone().text(function(i, text) { return text + " "; }).text(),
 		url: document.URL
 		// does not send cross-domain cookies
 	}, function(data) {
