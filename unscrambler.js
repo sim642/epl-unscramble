@@ -67,19 +67,33 @@ for (var i = 0; i < bigramLines.length; i++) {
 }
 bigramLines = null;
 
-function mimicCapital(word, mask) {
-	for (var i = 0; i < mask.length; i++) {
-		if (mask[i].match(/[A-ZÕÜÄÖ]/)) {
-			word = word.replaceAt(i, word[i].toUpperCase());
+function mimicCapital(word, mask, mode) {
+	switch (mode) {
+	default:
+		for (var i = 0; i < mask.length; i++) {
+			if (mask[i].match(/[A-ZÕÜÄÖ]/)) {
+				word = word.replaceAt(i, word[i].toUpperCase());
+			}
 		}
+		break;
+
+	case 'pm':
+		for (var i = 0; i < mask.length; i++) {
+			if (mask[i].match(/[A-ZÕÜÄÖ]/)) {
+				word = word.replace(mask[i].toLowerCase(), mask[i]);
+			}
+		}
+		break;
 	}
 	return word;
 }
 
-module.exports.unscramble = function(content, extra, callback) {
+module.exports.unscramble = function(content, extra, mode, callback) {
 	var extras = {}; // known words from article intro
 	extra.replace(/[A-ZÕÜÄÖa-zäöõü]+/g, function(match) {
 		var sorted = match.toLowerCase().sort();
+		if (mode == 'pm')
+			sorted = sorted.replace(/[õüäö]/g, '');
 
 		if (!(sorted in extras))
 			extras[sorted] = [];
@@ -112,18 +126,38 @@ module.exports.unscramble = function(content, extra, callback) {
 
 		var prev = ''; // previous word, TODO: might be broken due to nodes selector
 		for (var i = 0; i < nodes.length; i++) {
-			nodes[i].nodeValue = nodes[i].nodeValue.replace(/[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g, function(match) {
-				if (match.match(/[.,]/)) { // remember punctuation as previous
-					prev = match;
-					return match;
+			var re;
+			switch (mode) {
+			default:
+				re = /[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g;
+				break;
+			case 'pm':
+				re = /[A-ZÕÜÄÖa-zäöõü.,]+/g;
+				break;
+			}
+
+			nodes[i].nodeValue = nodes[i].nodeValue.replace(re, function(match) {
+				var suffix = '';
+
+				var punctPos = match.search(/[.,]/);
+				if (punctPos != -1) { // remember punctuation as previous
+					switch (mode) {
+					default:
+						prev = match;
+						return match;
+					case 'pm':
+						suffix = match[punctPos];
+						match = match.slice(0, punctPos) + match.slice(punctPos + 1);
+						break;
+					}
 				}
 
 				var sorted = match.toLowerCase().sort();
 
 				if (sorted in extras) { // known word from article intro
-					var word = mimicCapital(extras[sorted][0].word, match);
-					prev = word;
-					return word;
+					var word = mimicCapital(extras[sorted][0].word, match, mode);
+					prev = suffix == '' ? word : suffix;
+					return word + suffix;
 				}
 				if (sorted in words) { // known word from wordlist
 					var cands = words[sorted]; // word candidates
@@ -135,13 +169,13 @@ module.exports.unscramble = function(content, extra, callback) {
 						return rhs.prob - lhs.prob;
 					});
 
-					var word = mimicCapital(cands[0].word, match);
-					prev = word;
-					return word;
+					var word = mimicCapital(cands[0].word, match, mode);
+					prev = suffix == '' ? word : suffix;
+					return word + suffix;
 				}
 				else { // unknown word
 					prev = match;
-					return "[" + match + "]";
+					return "[" + match + suffix + "]";
 				}
 			});
 		}

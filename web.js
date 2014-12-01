@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var ua = require('universal-analytics');
 var merge = require('merge');
+var url = require('url');
 
 var app = express();
 var unscrambler = require('./unscrambler');
@@ -69,7 +70,13 @@ app.get('/epl-unscramble.user.js', function(req, res) {
 app.post('/unscramble', function(req, res) {
 	req.visitor.event(merge(req.visitor.defaults, {ec: 'Processing', ea: 'unscramble', el: req.body.url})).send();
 
-	unscrambler.unscramble(req.body.text, req.body.extra, function(text) {
+	var mode = 'epl';
+	var parsedUrl = url.parse(req.body.url);
+	if (parsedUrl.hostname.indexOf('postimees') != -1)
+		mode = 'pm';
+
+
+	unscrambler.unscramble(req.body.text, req.body.extra, mode, function(text) {
 		res.set({'Access-Control-Allow-Origin': '*'}); // stop browsers from freaking out about cross domain AJAX
 		res.send(text);
 	});
