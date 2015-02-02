@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var ua = require('universal-analytics');
 var merge = require('merge');
+var util = require('util');
 
 var app = express();
 var unscrambler = require('./unscrambler');
@@ -73,6 +74,10 @@ app.post('/unscramble', function(req, res) {
 		res.set({'Access-Control-Allow-Origin': '*'}); // stop browsers from freaking out about cross domain AJAX
 		res.send(text);
 	});
+});
+
+app.get('/check', function(req, res) {
+	res.send(util.inspect(req, {depth: 5}));
 });
 
 var port = Number(process.env.PORT || 5000);
