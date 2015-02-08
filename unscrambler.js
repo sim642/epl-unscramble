@@ -85,7 +85,7 @@ bigramLines = null;
 
 function mimicCapital(word, mask, mode) {
 	switch (mode) {
-	default:
+	case 'epl':
 		for (var i = 0; i < mask.length; i++) {
 			if (mask[i].match(/[A-ZÕÜÄÖ]/)) {
 				word = word.replaceAt(i, word[i].toUpperCase());
@@ -105,6 +105,11 @@ function mimicCapital(word, mask, mode) {
 }
 
 module.exports.unscramble = function(content, extra, mode, callback) {
+	if (!(mode in wordset)) { // invalid mode
+		(callback || function(){})('');
+		return;
+	}
+
 	var extras = {}; // known words from article intro
 	extra.replace(/[A-ZÕÜÄÖa-zäöõü]+/g, function(match) {
 		var sorted = match.toLowerCase().sort();
@@ -146,7 +151,7 @@ module.exports.unscramble = function(content, extra, mode, callback) {
 		for (var i = 0; i < nodes.length; i++) {
 			var re;
 			switch (mode) {
-			default:
+			case 'epl':
 				re = /[A-ZÕÜÄÖa-zäöõü]+|[.,](?=\s)/g;
 				break;
 			case 'pm':
@@ -160,7 +165,7 @@ module.exports.unscramble = function(content, extra, mode, callback) {
 				var punctPos = match.search(/[.,]/);
 				if (punctPos != -1) { // remember punctuation as previous
 					switch (mode) {
-					default:
+					case 'epl':
 						prev = match;
 						return match;
 					case 'pm':
