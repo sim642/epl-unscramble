@@ -10,7 +10,7 @@ String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index + character.length);
 }
 
-var words = {};
+var wordset = {epl: {}, pm: {}};
 var wordSum = 0;
 
 function loadWordFile(filename, swap) {
@@ -24,21 +24,34 @@ function loadWordFile(filename, swap) {
 		if (swap)
 			s = [s[1], s[0]];
 
-		var sorted = s[1].sort();
+		for (var mode in wordset) {
+			var words = wordset[mode];
+			var sorted;
 
-		if (!(sorted in words))
-			words[sorted] = [];
+			switch (mode) {
+			case 'epl':
+				sorted = s[1].sort();
+				break;
 
-		var j;
-		for (j = 0; j < words[sorted].length; j++) {
-			if (words[sorted][j].word == s[1]) {
-				words[sorted][j].count += parseInt(s[0]);
+			case 'pm':
+				sorted = s[1].replace(/[õüäö]/gi, '').sort();
 				break;
 			}
-		}
 
-		if (j == words[sorted].length)
-			words[sorted].push({word: s[1], count: parseInt(s[0])});
+			if (!(sorted in words))
+				words[sorted] = [];
+
+			var j;
+			for (j = 0; j < words[sorted].length; j++) {
+				if (words[sorted][j].word == s[1]) {
+					words[sorted][j].count += parseInt(s[0]);
+					break;
+				}
+			}
+
+			if (j == words[sorted].length)
+				words[sorted].push({word: s[1], count: parseInt(s[0])});
+		}
 
 		wordSum += parseInt(s[0]);
 	}
@@ -47,10 +60,13 @@ function loadWordFile(filename, swap) {
 loadWordFile('sonavorm_kahanevas.txt', false);
 loadWordFile('et.txt', true);
 
-for (var sorted in words) {
-	words[sorted].sort(function(lhs, rhs) {
-		rhs.count - lhs.count;
-	});
+for (var mode in wordset) {
+	var words = wordset[mode];
+	for (var sorted in words) {
+		words[sorted].sort(function(lhs, rhs) {
+			rhs.count - lhs.count;
+		});
+	}
 }
 
 console.log('Loading bigramfile');
@@ -93,7 +109,7 @@ module.exports.unscramble = function(content, extra, mode, callback) {
 	extra.replace(/[A-ZÕÜÄÖa-zäöõü]+/g, function(match) {
 		var sorted = match.toLowerCase().sort();
 		if (mode == 'pm')
-			sorted = sorted.replace(/[õüäö]/g, '');
+			sorted = sorted.replace(/[õüäö]/gi, '');
 
 		if (!(sorted in extras))
 			extras[sorted] = [];
@@ -116,6 +132,8 @@ module.exports.unscramble = function(content, extra, mode, callback) {
 			rhs.count - lhs.count;
 		});
 	}
+
+	var words = wordset[mode];
 
 	jsdom.env({html: content, src: [jquery], done: function(err, window) {
 		var $ = window.jQuery;
