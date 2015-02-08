@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var ua = require('universal-analytics');
 var merge = require('merge');
-var url = require('url');
 
 var app = express();
 var unscrambler = require('./unscrambler');
