@@ -70,13 +70,7 @@ app.get('/epl-unscramble.user.js', function(req, res) {
 app.post('/unscramble', function(req, res) {
 	req.visitor.event(merge(req.visitor.defaults, {ec: 'Processing', ea: 'unscramble', el: req.body.url})).send();
 
-	var mode = 'epl';
-	var parsedUrl = url.parse(req.body.url);
-	if (parsedUrl.hostname.indexOf('postimees') != -1)
-		mode = 'pm';
-
-
-	unscrambler.unscramble(req.body.text, req.body.extra, mode, function(text) {
+	unscrambler.unscramble(req.body.text, req.body.extra, req.body.mode, function(text) {
 		res.set({'Access-Control-Allow-Origin': '*'}); // stop browsers from freaking out about cross domain AJAX
 		res.send(text);
 	});

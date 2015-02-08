@@ -6,7 +6,8 @@ if ($('div.obfuscated_body').length > 0) { // EPL, delfi
 			' ' + $('font.articleBody[itemprop="articleBody"]').clone().children().remove().end().text().trim() +
 			' ' + $('font.imgCapS').text() +
 			' ' + $('a', '.obfuscated_body').clone().text(function(i, text) { return text + " "; }).text(),
-		url: document.URL
+		url: document.URL,
+		mode: 'epl'
 		// does not send cross-domain cookies
 	}, function(data) {
 		$('div.obfuscated_body').html(data).removeClass('obfuscated_body');
@@ -22,7 +23,8 @@ else if ($('div.shadowText').length > 0) { // postimees
 			' ' + $('h1.articleHeading').text() +
 			' ' + $('section.articleTeaser').text() +
 			' ' + $('section.articlePhotoes div.photoDescription').text(),
-		url: document.URL
+		url: document.URL,
+		mode: 'pm'
 		// does not send cross-domain cookies
 	}, function(data) {
 		$('div.shadowText').html(data).removeClass('shadowText');
