@@ -1,5 +1,5 @@
 if ($('div.obfuscated_body').length > 0) { // EPL, delfi
-	$.post('http://localhost:5000/unscramble?auto=' + (window.EPLauto ? 1 : 0), {
+	$.post('http://epl-unscramble.herokuapp.com/unscramble?auto=' + (window.EPLauto ? 1 : 0), {
 		text: $('div.obfuscated_body').html(),
 		extra: $('font.articleBody[itemprop="description"]').text() +
 			' ' + $('font.articleBody[itemprop="articleBody"] > p').text().trim() +
@@ -17,7 +17,7 @@ if ($('div.obfuscated_body').length > 0) { // EPL, delfi
 	});
 }
 else if ($('div.shadowText').length > 0) { // postimees
-	$.post('http://localhost:5000/unscramble?auto=' + (window.EPLauto ? 1 : 0), {
+	$.post('http://epl-unscramble.herokuapp.com/unscramble?auto=' + (window.EPLauto ? 1 : 0), {
 		text: $('div.shadowText').html(),
 		extra: $('section.articleLead[itemprop="description"]').text() +
 			' ' + $('h1.articleHeading').text() +
