@@ -2,7 +2,9 @@ epl-unscramble
 ==============
 **epl-unscramble** on Eesti Päevalehe (EPL) tasuliste artiklite tõenäosuslik dešifreerija. Selleks ei kasuta antud süsteem mitte midagi rohkemat kui infot ainult sellelt leheküljelt, millel paikeb artikli algus ja ülejäänud "udu". Lisaks kasutab süsteem vaid üht lihtsat eesti keele sõnade nimekirja ning kuna sellega töötlemine nõuab olulist ressurssi, siis tehakse põhiline dešifreerimine ära serveri poolel.
 
-Lisaks toimib epl-unscramble ka Eesti Ekspressi, Maalehe ja teiste delfi.ee portaalis paiknevate tasuliste artiklitega.
+Lisaks toimib epl-unscramble ka Eesti Ekspressi, Maalehe ja teiste delfi.ee portaalis paiknevate tasuliste artiklitega ning kohati ka Postimees Pluss artiklitega.
+
+### Hetkel delfi.ee portaalis paiknevate artiklite dešifreerimine ei tööta, kuna algoritmi on muudetud ([#4](https://github.com/sim642/epl-unscramble/issues/4))
 
 Kuidas kasutada?
 ----------------
