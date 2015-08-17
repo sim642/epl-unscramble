@@ -38,7 +38,11 @@ app.use(function(req, res, next) { // GA pageview
 app.use(function(req, res, next) { // CORS enable - http://enable-cors.org/server_expressjs.html
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	next();
+
+	if (req.method == "OPTIONS")
+		res.send(200);
+	else
+		next();
 });
 
 app.get('/', function(req, res) {
