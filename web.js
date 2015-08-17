@@ -35,6 +35,12 @@ app.use(function(req, res, next) { // GA pageview
 	next();
 });
 
+app.use(function(req, res, next) { // CORS enable - http://enable-cors.org/server_expressjs.html
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
+
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
@@ -51,7 +57,6 @@ app.post('/unscramble', function(req, res) {
 	req.visitor.event(merge(req.visitor.defaults, {ec: 'Processing', ea: 'unscramble', el: req.body.url})).send();
 
 	unscrambler.unscramble(req.body.text, req.body.extra, req.body.mode, function(text) {
-		res.set({'Access-Control-Allow-Origin': '*'}); // stop browsers from freaking out about cross domain AJAX
 		res.send(text);
 	});
 });
